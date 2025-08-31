@@ -1,10 +1,10 @@
 "use client";
 
 import axios from "axios";
-
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import React, { Suspense, useEffect, useState } from "react";
 
 interface Product {
   _id: string;
@@ -13,15 +13,22 @@ interface Product {
   price: number;
 }
 
-const ProductList = () => {
-  // const products = ["'", "", "", "", ""];
+const SearchComponent = () => {
   const [products, setProducts] = useState([]);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    axios
-      .get("/api/fetch-products")
-      .then((response) => setProducts(response.data.products));
-  }, []);
+    const searchTermFromUrl = searchParams.get("searchTerm");
+    if (searchTermFromUrl) {
+      axios
+        .get(`/api/search?searchTerm=${searchTermFromUrl}`)
+        .then((response) => setProducts(response.data.products))
+        .catch((error) =>
+          console.log("Error fetching search results: ", error)
+        );
+    }
+  }, [searchParams]);
+
   return (
     <div
       id="product"
@@ -40,7 +47,7 @@ const ProductList = () => {
 
             <div className="mt-4">
               <h2 className="font-semibold text-lg">{product.name}</h2>
-              <p className="font-medium text-sm mt-1">{product.price}</p>
+              <p className="font-medium text-sm mt-1">${product.price}</p>
             </div>
           </Link>
         ))}
@@ -49,4 +56,12 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+const SearchPage = () => {
+  return (
+    <Suspense fallback={"Hello"}>
+      <SearchComponent />
+    </Suspense>
+  );
+};
+
+export default SearchPage;
