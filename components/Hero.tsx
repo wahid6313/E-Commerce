@@ -23,7 +23,13 @@ const Hero = () => {
       </div>
 
       <div>
-        <Image src="/hero-img.png" alt="img" width={500} height={500} />
+        <Image
+          src="/watchHero2.png"
+          alt="img"
+          width={700}
+          height={700}
+          className="opacity-70 "
+        />
       </div>
     </div>
   );
